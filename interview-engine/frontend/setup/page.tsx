@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { submitAnswer, endSession, getSession } from "@/lib/api";
-import { useVoice } from "@/lib/useVoice";
-import { useTTS } from "@/lib/useTTS";
+import { submitAnswer, endSession, getSession } from "../lib/api";
+import { useVoice } from "../lib/useVoice";
+import { useTTS } from "../lib/useTTS";
 import {
   Mic, MicOff, Send, StopCircle, ChevronRight,
   BarChart3, AlertTriangle, Loader2, Volume2,
@@ -122,7 +122,7 @@ function InterviewContent() {
     setMessages(prev => [...prev, candidateMsg]);
 
     try {
-      const res = await submitAnswer({ session_id: sessionId, answer_text: text });
+      const res = await submitAnswer(sessionId, text);
 
       // Update candidate message with score & fillers
       setMessages(prev => prev.map(m =>
