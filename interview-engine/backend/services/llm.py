@@ -4,7 +4,7 @@ import os, json, re
 
 load_dotenv()   # ← load .env before anything else
 
-client = AsyncGroq(api_key=os.getenv("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"))
+client = AsyncGroq(api_key=os.getenv("GROQ_API_KEY"))
 
 FAST_MODEL  = "llama-3.1-8b-instant"
 SMART_MODEL = "llama-3.3-70b-versatile"
