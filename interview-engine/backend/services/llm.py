@@ -1,17 +1,10 @@
-"""
-Groq LLM service.
-Uses MarkItDown-extracted Markdown for resume/JD → far fewer tokens.
-
-Free Groq models (fastest → smartest):
-  llama-3.1-8b-instant       – follow-ups, scoring  (~130k ctx)
-  llama-3.3-70b-versatile    – question gen, reports (~128k ctx)
-  mixtral-8x7b-32768         – good fallback
-"""
 from groq import AsyncGroq
+from dotenv import load_dotenv
 import os, json, re
-from typing import Optional
 
-client = AsyncGroq(api_key=os.getenv("GROQ_API_KEY"))
+load_dotenv()   # ← load .env before anything else
+
+client = AsyncGroq(api_key=os.getenv("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"))
 
 FAST_MODEL  = "llama-3.1-8b-instant"
 SMART_MODEL = "llama-3.3-70b-versatile"
@@ -45,10 +38,6 @@ async def generate_questions(
     num_questions: int = 8,
     extra_context: str = "",
 ) -> list[dict]:
-    """
-    Generate personalised interview questions from MarkItDown-extracted text.
-    Resume + JD are already compact Markdown → very token efficient.
-    """
     stress_line = (
         "Include 2 pressure/stress questions that challenge the candidate's decisions."
         if mode == "stress" else ""
@@ -84,10 +73,6 @@ async def get_next_action(
     current_q_index: int,
     mode: str = "standard",
 ) -> dict:
-    """
-    Decide: ask_followup | next_question | end_interview
-    Returns the interviewer's spoken response + action metadata.
-    """
     remaining = len(questions) - current_q_index - 1
 
     if mode == "stress":
@@ -109,7 +94,7 @@ Remaining questions after this one: {remaining}.
 Decide what to do next. Return ONLY JSON:
 {{"action":"ask_followup|next_question|end_interview","message":"<your spoken response>"}}
 
-- ask_followup  → answer was vague/incomplete; probe deeper (don't repeat the question)
+- ask_followup  → answer was vague/incomplete; probe deeper
 - next_question → answer was sufficient; acknowledge briefly then ask next question
 - end_interview → no questions left"""
 
@@ -180,9 +165,9 @@ def detect_filler_words(text: str) -> dict:
     fluency_score = round(max(0.0, 100 - rate * 5), 1)
 
     return {
-        "found":            found,
-        "total_fillers":    total_fillers,
-        "total_words":      total_words,
-        "filler_rate_pct":  rate,
-        "fluency_score":    fluency_score,
+        "found":           found,
+        "total_fillers":   total_fillers,
+        "total_words":     total_words,
+        "filler_rate_pct": rate,
+        "fluency_score":   fluency_score,
     }
